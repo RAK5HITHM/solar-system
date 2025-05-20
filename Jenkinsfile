@@ -39,6 +39,7 @@ pipeline {
                             --out \'./\'  
                             --format \'ALL\' 
                             --disableYarnAudit \
+                            --data /var/lib/jenkins/owasp-db/data/ \
                             --prettyPrint''', odcInstallation: 'OWASP-DepCheck-10'
                         dependencyCheckPublisher failedTotalMedium: 1, failedTotalLow: 1, failedTotalHigh: 1, pattern: 'dependency-check-report.xml', stopBuild: true
                         publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './', reportFiles: 'dependency-check-jenkins.html', reportName: 'Dependency Check HTML Report', reportTitles: '', useWrapperFileDirectly: true])
@@ -82,7 +83,7 @@ pipeline {
         }
         stage('Trivy Vulnerability Scanner') {
             steps {
-                sh  '''trivy image siddharth67/solar-system:$GIT_COMMIT --severity CRITICAL --exit-code 1 --quiet --format json -o trivy-image-CRITICAL-results.json'''
+                sh  '''trivy image --severity CRITICAL --exit-code 1 --format json -o trivy-image-CRITICAL-results.json  kodekloud-hub:5000/solar-system:$GIT_COMMIT '''
                 sh  '''trivy convert --format template --template "@/usr/local/share/trivy/templates/html.tpl" --output trivy-image-CRITICAL-results.html trivy-image-CRITICAL-results.json'''
                 publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './', reportFiles: 'trivy-image-CRITICAL-results.html', reportName: 'Trivy Image Critical Vul Report', reportTitles: '', useWrapperFileDirectly: true])
            }
