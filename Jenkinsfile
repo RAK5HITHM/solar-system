@@ -78,7 +78,7 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                sh  'docker build -t siddharth67/solar-system:$GIT_COMMIT .'
+                sh  'docker build -t kodekloud-hub:5000/solar-system:$GIT_COMMIT .'
             }
         }
         stage('Trivy Vulnerability Scanner') {
@@ -91,7 +91,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 withDockerRegistry(credentialsId: 'docker-hub-credentials', url: "") {
-                    sh  'docker push siddharth67/solar-system:$GIT_COMMIT'
+                    sh  'docker push kodekloud-hub:5000/solar-system:$GIT_COMMIT'
                 }
             }
         }
